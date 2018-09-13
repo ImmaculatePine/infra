@@ -2,15 +2,6 @@ variable "name" {
   default = "iv-romance"
 }
 
-variable "environment_tag" {
-  default = "production"
-}
-
-locals {
-  aws_bucket_name = "${var.name}-uploads-${var.environment_tag}"
-  aws_user_name   = "${var.name}-uploads-${var.environment_tag}"
-}
-
 resource "heroku_app" "iv_romance" {
   name         = "${var.name}"
   region       = "${var.heroku_region}"
@@ -20,6 +11,12 @@ resource "heroku_app" "iv_romance" {
     "https://github.com/HashNuke/heroku-buildpack-elixir.git",
     "https://github.com/gjaldon/heroku-buildpack-phoenix-static.git"
   ]
+
+  config_vars = {
+    UPLOADS_S3_BUCKET = "${module.iv_romance_production_uploads.bucket_name}"
+    AWS_ACCESS_KEY_ID = "${module.iv_romance_production_uploads.access_key_id}"
+    AWS_SECRET_ACCESS_KEY = "${module.iv_romance_production_uploads.access_key_secret}"
+  }
 }
 
 resource "heroku_addon" "iv_romance_database" {
@@ -27,71 +24,21 @@ resource "heroku_addon" "iv_romance_database" {
   plan = "heroku-postgresql:hobby-dev"
 }
 
-resource "aws_s3_bucket" "uploads" {
-  bucket = "${local.aws_bucket_name}"
-  acl    = "public-read"
+module "iv_romance_production_uploads" {
+  source = "./modules/bucket"
 
-  tags {
-    Name        = "${local.aws_bucket_name}"
-    Environment = "${var.environment_tag}"
-  }
+  environment = "production"
+  resource_name = "${var.name}-uploads"
 }
 
-resource "aws_s3_bucket_policy" "uploads" {
-  bucket = "${aws_s3_bucket.uploads.id}"
-
-  policy = <<POLICY
-{
-  "Version":"2012-10-17",
-  "Statement":[
-    {
-      "Sid":"AddPerm",
-      "Effect":"Allow",
-      "Principal": "*",
-      "Action":["s3:GetObject"],
-      "Resource":["${aws_s3_bucket.uploads.arn}/*"]
-    }
-  ]
-}
-POLICY
+output "iv_romance_production_uploads_bucket_name" {
+  value = "${module.iv_romance_production_uploads.bucket_name}"
 }
 
-resource "aws_iam_user" "uploads" {
-  name = "${local.aws_user_name}"
+output "iv_romance_production_uploads_access_key_id" {
+  value = "${module.iv_romance_production_uploads.access_key_id}"
 }
 
-resource "aws_iam_user_policy" "uploads" {
-  user = "${aws_iam_user.uploads.name}"
-
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "s3:PutObject",
-        "s3:DeleteObject"
-      ],
-      "Effect": "Allow",
-      "Resource": "${aws_s3_bucket.uploads.arn}/*"
-    }
-  ]
-}
-POLICY
-}
-
-resource "aws_iam_access_key" "uploads" {
-  user = "${aws_iam_user.uploads.name}"
-}
-
-output "uploads_bucket_name" {
-  value = "${aws_s3_bucket.uploads.id}"
-}
-
-output "uploads_access_key_id" {
-  value = "${aws_iam_access_key.uploads.id}"
-}
-
-output "uploads_access_key_secret" {
-  value = "${aws_iam_access_key.uploads.secret}"
+output "iv_romance_production_uploads_access_key_secret" {
+  value = "${module.iv_romance_production_uploads.access_key_secret}"
 }
