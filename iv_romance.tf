@@ -31,14 +31,21 @@ module "iv_romance_production_uploads" {
   resource_name = "${var.name}-uploads"
 }
 
-output "iv_romance_production_uploads_bucket_name" {
-  value = "${module.iv_romance_production_uploads.bucket_name}"
+module "iv_romance_development_uploads" {
+  source = "./modules/bucket"
+
+  environment = "development"
+  resource_name = "${var.name}-uploads"
 }
 
-output "iv_romance_production_uploads_access_key_id" {
-  value = "${module.iv_romance_production_uploads.access_key_id}"
+output "iv_romance_development_uploads_bucket_name" {
+  value = "${module.iv_romance_development_uploads.bucket_name}"
 }
 
-output "iv_romance_production_uploads_access_key_secret" {
-  value = "${module.iv_romance_production_uploads.access_key_secret}"
+output "iv_romance_development_uploads_access_key_id" {
+  value = "${module.iv_romance_development_uploads.access_key_id}"
+}
+
+output "iv_romance_development_uploads_access_key_secret" {
+  value = "${module.iv_romance_development_uploads.access_key_secret}"
 }
