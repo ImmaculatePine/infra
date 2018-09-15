@@ -9,7 +9,8 @@ resource "heroku_app" "iv_romance" {
 
   buildpacks = [
     "https://github.com/HashNuke/heroku-buildpack-elixir.git",
-    "https://github.com/gjaldon/heroku-buildpack-phoenix-static.git"
+    "https://github.com/gjaldon/heroku-buildpack-phoenix-static.git",
+    "https://github.com/einSelbst/heroku-buildpack-imagemagick"
   ]
 
   config_vars = {
