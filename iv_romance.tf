@@ -27,7 +27,7 @@ resource "heroku_addon" "iv_romance_database" {
 
 resource "heroku_domain" "iv_romance_domain" {
   app      = "${heroku_app.iv_romance.name}"
-  hostname = "new.iv-romance.info"
+  hostname = "iv-romance.info"
 }
 
 module "iv_romance_production_uploads" {
