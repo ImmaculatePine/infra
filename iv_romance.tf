@@ -17,6 +17,7 @@ resource "heroku_app" "iv_romance" {
     UPLOADS_S3_BUCKET = "${module.iv_romance_production_uploads.bucket_name}"
     AWS_ACCESS_KEY_ID = "${module.iv_romance_production_uploads.access_key_id}"
     AWS_SECRET_ACCESS_KEY = "${module.iv_romance_production_uploads.access_key_secret}"
+    GOOGLE_ANALYTICS_TRACKING_ID = "UA-19606069-2"
   }
 }
 
