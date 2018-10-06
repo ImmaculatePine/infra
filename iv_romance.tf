@@ -26,6 +26,11 @@ resource "heroku_addon" "iv_romance_database" {
   plan = "heroku-postgresql:hobby-dev"
 }
 
+resource "heroku_addon" "iv_romance_papertrail" {
+  app  = "${heroku_app.iv_romance.name}"
+  plan = "papertrail:choklad"
+}
+
 resource "heroku_domain" "iv_romance_domain" {
   app      = "${heroku_app.iv_romance.name}"
   hostname = "iv-romance.info"
