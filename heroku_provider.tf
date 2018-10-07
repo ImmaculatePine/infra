@@ -7,7 +7,7 @@ variable "heroku_region" {
 }
 
 variable "heroku_stack" {
-  default = "heroku-18"
+  default = "heroku-16"
 }
 
 provider "heroku" {
